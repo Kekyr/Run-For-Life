@@ -5,7 +5,10 @@ using UnityEngine;
 
 public class PlayerController : MonoBehaviour
 {
-
+    private float lerpTime = 1f;
+    private float currentLerpTime;
+    
+    
     public float LineDistance = 4;
     
     [SerializeField] private int speed;
@@ -14,7 +17,7 @@ public class PlayerController : MonoBehaviour
     [SerializeField] private Transform camera;
     private Vector3 targetCameraPosition;
     private Vector3 _cameraVelocity;
-    [SerializeField] private float _smoothTime = 0.005f;
+    [SerializeField] private float _smoothTime = 0.004f;
 
     private Vector3 dir;
 
@@ -28,6 +31,8 @@ public class PlayerController : MonoBehaviour
 
     private void Update()
     {
+       
+        
         if (SwipeController.swipeRight)
         {
             if (currentLine < 2)
@@ -51,7 +56,9 @@ public class PlayerController : MonoBehaviour
             targetPosition += Vector3.left * LineDistance;
             targetCameraPosition = camera.position+(Vector3.left * LineDistance);
             camera.position = Vector3.SmoothDamp(camera.position, targetCameraPosition, ref _cameraVelocity, _smoothTime);
-            
+
+            //float perc = currentLerpTime / lerpTime;
+            //camera.position = Vector3.Lerp(camera.position, targetCameraPosition, perc);
         }
         else if (currentLine == 2)
         {

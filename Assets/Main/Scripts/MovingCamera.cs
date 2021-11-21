@@ -19,12 +19,7 @@ public class MovingCamera : MonoBehaviour
     
     private void FixedUpdate()
     {
-
-        
         var targetPosition = _target.transform.TransformPoint(_offset);
-        transform.position = Vector3.SmoothDamp(transform.position, targetPosition, ref _cameraVelocity, _smoothTime);
-
-        
-        
+        transform.position = Vector3.SmoothDamp(transform.position, targetPosition, ref _cameraVelocity, _smoothTime);  
     }
 }
