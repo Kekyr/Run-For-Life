@@ -5,6 +5,8 @@ using UnityEngine;
 
 public class SwipeController : MonoBehaviour
 {
+    public static SwipeController instance { get; private set; }
+    
     public static bool Tap;
     public static bool SwipeLeft;
     public static bool SwipeRight;
@@ -15,6 +17,18 @@ public class SwipeController : MonoBehaviour
     private Vector2 _touchStartPosition;
     private Vector2 _swipeDistance;
 
+    private void Awake()
+    {
+        if (instance == null)
+        {
+            instance = this;
+            DontDestroyOnLoad(gameObject);
+        }
+        else
+        {
+            Destroy(gameObject);
+        }
+    }
 
     private void Update()
     {

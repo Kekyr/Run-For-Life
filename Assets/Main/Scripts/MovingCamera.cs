@@ -10,27 +10,16 @@ public class MovingCamera : MonoBehaviour
     private Vector3 _cameraVelocity;
     private float _smoothTime = 0.005f;
     
-    
     private void Start()
     {
-        Target = FindObjectOfType<PlayerController>().transform;
+        Target=FindObjectOfType<RigidbodyController>().transform;
         Offset = transform.position - Target.position;
     }
 
-    
     private void FixedUpdate()
     {
         Vector3 targetPosition = Target.transform.TransformPoint(Offset);
         transform.position = Vector3.SmoothDamp(transform.position, targetPosition, ref _cameraVelocity, _smoothTime);  
     }
     
-    public void MoveCameraToTheRight(float LineDistance)
-    {
-        Offset+=Vector3.right*LineDistance;
-    }
-    
-    public void MoveCameraToTheLeft(float LineDistance)
-    {
-        Offset+=Vector3.left*LineDistance;
-    }
 }

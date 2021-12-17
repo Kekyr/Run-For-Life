@@ -12,7 +12,7 @@ public class RigidbodyController : MonoBehaviour
     private Vector3 _startGamePosition;
     private Vector3 _targetVelocity;
     private Quaternion _startGameRotation;
-    public float _distanceBetweenLines;
+    private float _distanceBetweenLines=1.5f;
     private float _changeLineSpeed = 30;
     private float _startPoint;
     private float _finishPoint;
@@ -116,6 +116,7 @@ public class RigidbodyController : MonoBehaviour
         RoadGenerator.instance.StartLevel();
     }
 
+    // Переместить в Singleton
     public void ResetGame()
     {
         _rigidbody.velocity = Vector3.zero;

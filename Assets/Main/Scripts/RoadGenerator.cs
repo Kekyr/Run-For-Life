@@ -5,7 +5,7 @@ using UnityEngine.Serialization;
 
 public class RoadGenerator : MonoBehaviour
 {
-    public static RoadGenerator instance;
+    public static RoadGenerator instance { get; private set; }
     
     public GameObject[] PlatformPrefabs;
     private List<GameObject> _activePlatforms = new List<GameObject>();
@@ -17,7 +17,15 @@ public class RoadGenerator : MonoBehaviour
 
     private void Awake()
     {
-        instance = this;
+        if (instance == null)
+        {
+            instance = this;
+            DontDestroyOnLoad(gameObject);
+        }
+        else
+        {
+            Destroy(gameObject);
+        }
     }
     
     private void Start()
@@ -80,7 +88,6 @@ public class RoadGenerator : MonoBehaviour
             position = _activePlatforms[_activePlatforms.Count - 1].transform.position + _platformLength;
         }
         GameObject gameObject=Instantiate(PlatformPrefabs[Random.Range(0, PlatformPrefabs.Length)], position, Quaternion.identity);
-        //gameObject.transform.SetParent(transform);
         _activePlatforms.Add(gameObject);
     }
 
