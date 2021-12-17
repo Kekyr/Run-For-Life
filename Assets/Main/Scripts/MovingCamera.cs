@@ -4,22 +4,33 @@ using UnityEngine;
 
 public class MovingCamera : MonoBehaviour
 {
-    public Transform _target;
-    private Vector3 _offset = new Vector3(-0.57f, 3.354f, -3.32f);
-    private Vector3 _cameraVelocity;
-    private float _smoothTime = 0.001f;
+    public Transform Target;
     
-
-
+    public Vector3 Offset;
+    private Vector3 _cameraVelocity;
+    private float _smoothTime = 0.005f;
+    
+    
     private void Start()
     {
-        _target = FindObjectOfType<PlayerController>().transform;
+        Target = FindObjectOfType<PlayerController>().transform;
+        Offset = transform.position - Target.position;
     }
 
     
     private void FixedUpdate()
     {
-        var targetPosition = _target.transform.TransformPoint(_offset);
+        Vector3 targetPosition = Target.transform.TransformPoint(Offset);
         transform.position = Vector3.SmoothDamp(transform.position, targetPosition, ref _cameraVelocity, _smoothTime);  
+    }
+    
+    public void MoveCameraToTheRight(float LineDistance)
+    {
+        Offset+=Vector3.right*LineDistance;
+    }
+    
+    public void MoveCameraToTheLeft(float LineDistance)
+    {
+        Offset+=Vector3.left*LineDistance;
     }
 }

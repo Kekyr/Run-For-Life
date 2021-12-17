@@ -1,80 +1,127 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
+using UnityEngine.Serialization;
 
 
 public class PlayerController : MonoBehaviour
 {
-    private float lerpTime = 1f;
-    private float currentLerpTime;
-    
-    
+
+    public MovingCamera MovingCamera;
+    private CharacterController _characterController;
+    private Animator _animator;
+
     public float LineDistance = 4;
-    
-    [SerializeField] private int speed;
-    private CharacterController controller;
+    [SerializeField] private int _speed;
+    [SerializeField] private int _jumpForce;
+    [SerializeField] private int _fallForce;
+    private int _currentLine = 1;
+    private Vector3 _dir;
 
-    [SerializeField] private Transform camera;
-    private Vector3 targetCameraPosition;
-    private Vector3 _cameraVelocity;
-    [SerializeField] private float _smoothTime = 0.004f;
 
-    private Vector3 dir;
 
-    private static int currentLine = 1;
-    
     private void Start()
     {
-        dir = Vector3.forward;
-        controller = GetComponent<CharacterController>();
+        _dir = new Vector3();
+        _characterController = GetComponent<CharacterController>();
+        _animator = GetComponentInChildren<Animator>();
+
     }
 
     private void Update()
     {
-       
-        
-        if (SwipeController.swipeRight)
+        CheckSwipeUp();
+
+        CheckSwipeRight();
+
+        CheckSwipeLeft();
+
+        ChangePlayerPosition();
+
+    }
+
+
+
+
+    private void FixedUpdate()
+    {
+        _dir.z = _speed;
+        _dir.y += _fallForce * Time.fixedDeltaTime;
+        _characterController.Move(_dir * Time.fixedDeltaTime);
+        _animator.SetBool("IsJumping", false);
+    }
+
+    private void CheckSwipeUp()
+    {
+        if (SwipeController.SwipeUp)
         {
-            if (currentLine < 2)
+            if (_characterController.isGrounded)
             {
-                currentLine++;
+                Jump();
             }
         }
+    }
 
-        if (SwipeController.swipeLeft)
+    private void Jump()
+    {
+        _dir.y = _jumpForce;
+        _animator.SetBool("IsJumping", true);
+    }
+
+    private void CheckSwipeRight()
+    {
+        if (SwipeController.SwipeRight)
         {
-            if (currentLine > 0)
+            if (_currentLine < 2)
             {
-                currentLine--;
+                _currentLine++;
+                MovingCamera.MoveCameraToTheRight(LineDistance);
             }
         }
+    }
 
+    private void CheckSwipeLeft()
+    {
+        if (SwipeController.SwipeLeft)
+        {
+            if (_currentLine > 0)
+            {
+                _currentLine--;
+                MovingCamera.MoveCameraToTheLeft(LineDistance);
+            }
+        }
+    }
+
+    private void ChangePlayerPosition()
+    {
         Vector3 targetPosition = transform.position.z * transform.forward + transform.position.y * transform.up;
 
-        if (currentLine == 0)
-        {
-            targetPosition += Vector3.left * LineDistance;
-            targetCameraPosition = camera.position+(Vector3.left * LineDistance);
-            camera.position = Vector3.SmoothDamp(camera.position, targetCameraPosition, ref _cameraVelocity, _smoothTime);
-
-            //float perc = currentLerpTime / lerpTime;
-            //camera.position = Vector3.Lerp(camera.position, targetCameraPosition, perc);
-        }
-        else if (currentLine == 2)
-        {
-            targetPosition += Vector3.right * LineDistance;
-            targetCameraPosition = camera.position+(Vector3.right * LineDistance);
-            camera.position = Vector3.SmoothDamp(camera.position, targetCameraPosition, ref _cameraVelocity, _smoothTime);
-
-        }
+        targetPosition = CheckCurrentLine(targetPosition);
 
         transform.position = targetPosition;
     }
 
-   
-    private void FixedUpdate()
+    private Vector3 CheckCurrentLine(Vector3 targetPosition)
     {
-        dir.z = speed;
-        controller.Move(dir * Time.fixedDeltaTime);
+        if (_currentLine == 0)
+        {
+            targetPosition += Vector3.left * LineDistance;
+        }
+        else if (_currentLine == 2)
+        {
+            targetPosition += Vector3.right * LineDistance;
+        }
+
+        return targetPosition;
+    }
+
+    private void OnCollisionEnter(Collision collision)
+    {
+        if (collision.gameObject.CompareTag("Wall"))
+        {
+            SceneManager.LoadScene("Main/Scenes/Lost");
+        }
     }
 }
